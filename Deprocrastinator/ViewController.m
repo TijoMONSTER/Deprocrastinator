@@ -46,6 +46,14 @@
     return [self.todoList count];
 }
 
+#pragma mark UITableViewDelegate
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.textLabel.textColor = [UIColor greenColor];x   
+}
+
 #pragma mark IBActions
 
 - (IBAction)onAddButtonPressed:(UIButton *)sender
