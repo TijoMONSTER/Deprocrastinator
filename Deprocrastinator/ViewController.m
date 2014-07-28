@@ -14,9 +14,7 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property BOOL isEditing;
-
 @property  NSMutableArray *todoList;
-
 
 @end
 
@@ -34,6 +32,7 @@
                      nil];
 
     self.isEditing = NO;
+
 }
 
 #pragma mark UITableViewDataSource
@@ -48,6 +47,13 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [self.todoList count];
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.todoList removeObjectAtIndex:indexPath.row];
+
+    [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark UITableViewDelegate
