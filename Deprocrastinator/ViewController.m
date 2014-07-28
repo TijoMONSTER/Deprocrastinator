@@ -10,7 +10,11 @@
 
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 
-@property NSArray *todoList;
+@property (weak, nonatomic) IBOutlet UITextField *addItemTextField;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@property  NSMutableArray *todoList;
+
 
 @end
 
@@ -20,7 +24,7 @@
 {
     [super viewDidLoad];
 
-    self.todoList = [NSArray arrayWithObjects:
+    self.todoList = [[NSMutableArray alloc] initWithObjects:
                      @"Get my bike!",
                      @"Feed the dog!",
                      @"Say hi to my parents",
@@ -40,6 +44,20 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [self.todoList count];
+}
+
+#pragma mark IBActions
+
+- (IBAction)onAddButtonPressed:(UIButton *)sender
+{
+    // if the textfield is not empty
+    if ([self.addItemTextField.text length] > 0) {
+        [self.todoList addObject:self.addItemTextField.text];
+        [self.tableView reloadData];
+
+        self.addItemTextField.text = @"";
+        [self.addItemTextField resignFirstResponder];
+    }
 }
 
 @end
