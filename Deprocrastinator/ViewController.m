@@ -51,7 +51,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.textLabel.textColor = [UIColor greenColor];x   
+    cell.textLabel.textColor = [UIColor greenColor];
 }
 
 #pragma mark IBActions
