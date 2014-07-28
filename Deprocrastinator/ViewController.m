@@ -13,6 +13,8 @@
 @property (weak, nonatomic) IBOutlet UITextField *addItemTextField;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
+@property BOOL isEditing;
+
 @property  NSMutableArray *todoList;
 
 
@@ -30,6 +32,8 @@
                      @"Say hi to my parents",
                      @"Run Forest, ruuuuun!",
                      nil];
+
+    self.isEditing = NO;
 }
 
 #pragma mark UITableViewDataSource
@@ -51,7 +55,14 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.textLabel.textColor = [UIColor greenColor];
+
+    if (self.isEditing) {
+        [self.todoList removeObjectAtIndex:indexPath.row];
+        [self.tableView reloadData];
+    }
+    else {
+        cell.textLabel.textColor = [UIColor greenColor];
+    }
 }
 
 #pragma mark IBActions
@@ -66,6 +77,19 @@
         self.addItemTextField.text = @"";
         [self.addItemTextField resignFirstResponder];
     }
+}
+
+- (IBAction)onEditButtonPressed:(UIButton *)sender
+{
+    // toggle text
+    if (!self.isEditing) {
+        [sender setTitle:@"Done" forState:UIControlStateNormal];
+    }
+    else {
+        [sender setTitle:@"Edit" forState:UIControlStateNormal];
+    }
+
+    self.isEditing = !self.isEditing;
 }
 
 @end
