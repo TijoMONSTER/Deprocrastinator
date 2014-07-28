@@ -8,13 +8,15 @@
 
 #import "ViewController.h"
 
-@interface ViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface ViewController () <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextField *addItemTextField;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property BOOL isEditing;
 @property  NSMutableArray *todoList;
+@property NSIndexPath *indexPathToDelete;
+@property BOOL deletionByClickingOnDeleteButton;
 
 @end
 
@@ -34,7 +36,6 @@
     self.isEditing = NO;
     // allow cells to be selected during editing mode
     self.tableView.allowsSelectionDuringEditing = YES;
-
 }
 
 #pragma mark UITableViewDataSource
@@ -53,9 +54,10 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // remove from the array and the tableView
-    [self.todoList removeObjectAtIndex:indexPath.row];
-    [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    // clicked on the delete button
+    self.deletionByClickingOnDeleteButton = YES;
+    self.indexPathToDelete = indexPath;
+    [self showDeletionConfirmationAlertView];
 }
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
@@ -72,9 +74,12 @@
 {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
 
+    // clicked on the cell, change its color or remove the item
+
     if (self.isEditing) {
-        [self.todoList removeObjectAtIndex:indexPath.row];
-        [self.tableView reloadData];
+        self.deletionByClickingOnDeleteButton = NO;
+        self.indexPathToDelete = indexPath;
+        [self showDeletionConfirmationAlertView];
     }
     else {
         cell.textLabel.textColor = [UIColor greenColor];
@@ -93,6 +98,7 @@
         [self.todoList addObject:self.addItemTextField.text];
         [self.tableView reloadData];
 
+        // reset textfield
         self.addItemTextField.text = @"";
         [self.addItemTextField resignFirstResponder];
     }
@@ -117,7 +123,7 @@
 
 - (IBAction)onSwipe:(UISwipeGestureRecognizer *)gestureRecognizer
 {
-    // find the cell that was
+    // find the cell that was tapped
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
         CGPoint location = [gestureRecognizer locationInView:self.tableView];
         NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
@@ -130,8 +136,42 @@
     }
 }
 
+#pragma mark UIAlertViewDelegate
+
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    // clicked on alert's delete button
+    if (buttonIndex == 0) {
+        // remove item from the array
+        [self removeObjectFromTodoListAtIndex:self.indexPathToDelete.row];
+
+        // clicked on cell's delete button
+        if (self.deletionByClickingOnDeleteButton) {
+            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.indexPathToDelete] withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+        // clicked on cell in editing mode
+        else {
+            [self.tableView reloadData];
+        }
+    }
+
+    self.deletionByClickingOnDeleteButton = NO;
+    self.indexPathToDelete = nil;
+}
+
 #pragma mark Helper methods
 
+- (void)showDeletionConfirmationAlertView
+{
+    UIAlertView *alertView = [[UIAlertView alloc] init];
+    alertView.title = @"Alert";
+    alertView.message = @"Are you sure you want to delete this item?";
+    alertView.delegate = self;
+
+    [alertView addButtonWithTitle:@"Delete"];
+    [alertView addButtonWithTitle:@"Cancel"];
+    [alertView show];
+}
 
 - (void)setCellTextLabelPriorityColor:(UITableViewCell *)cell
 {
@@ -151,6 +191,11 @@
     }
 
     cell.textLabel.textColor = color;
+}
+
+- (void)removeObjectFromTodoListAtIndex:(NSUInteger)index
+{
+    [self.todoList removeObjectAtIndex:index];
 }
 
 @end
