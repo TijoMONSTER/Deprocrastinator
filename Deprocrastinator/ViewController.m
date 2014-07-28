@@ -8,7 +8,9 @@
 
 #import "ViewController.h"
 
-@interface ViewController ()
+@interface ViewController () <UITableViewDelegate, UITableViewDataSource>
+
+@property NSArray *todoList;
 
 @end
 
@@ -17,13 +19,27 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+
+    self.todoList = [NSArray arrayWithObjects:
+                     @"Get my bike!",
+                     @"Feed the dog!",
+                     @"Say hi to my parents",
+                     @"Run Forest, ruuuuun!",
+                     nil];
 }
 
-- (void)didReceiveMemoryWarning
+#pragma mark UITableViewDataSource
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellID"];
+    cell.textLabel.text = [self.todoList objectAtIndex:indexPath.row];
+    return cell;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.todoList count];
 }
 
 @end
