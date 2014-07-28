@@ -32,6 +32,8 @@
                      nil];
 
     self.isEditing = NO;
+    // allow cells to be selected during editing mode
+    self.tableView.allowsSelectionDuringEditing = YES;
 
 }
 
@@ -56,9 +58,17 @@
     [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
+{
+    NSString *todoActivity = [self.todoList objectAtIndex:sourceIndexPath.row];
+
+    [self.todoList removeObjectAtIndex:sourceIndexPath.row];
+    [self.todoList insertObject:todoActivity atIndex:destinationIndexPath.row];
+}
+
 #pragma mark UITableViewDelegate
 
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
 
@@ -69,6 +79,9 @@
     else {
         cell.textLabel.textColor = [UIColor greenColor];
     }
+
+    // deselect the cell
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 #pragma mark IBActions
@@ -90,9 +103,11 @@
     // toggle text
     if (!self.isEditing) {
         [sender setTitle:@"Done" forState:UIControlStateNormal];
+        [self.tableView setEditing:YES animated:YES];
     }
     else {
         [sender setTitle:@"Edit" forState:UIControlStateNormal];
+        [self.tableView setEditing:NO animated:YES];
     }
 
     self.isEditing = !self.isEditing;
@@ -116,6 +131,7 @@
 }
 
 #pragma mark Helper methods
+
 
 - (void)setCellTextLabelPriorityColor:(UITableViewCell *)cell
 {
