@@ -51,8 +51,8 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    // remove from the array and the tableView
     [self.todoList removeObjectAtIndex:indexPath.row];
-
     [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
@@ -96,6 +96,45 @@
     }
 
     self.isEditing = !self.isEditing;
+}
+
+#pragma mark Gesture Recognizer
+
+- (IBAction)onSwipe:(UISwipeGestureRecognizer *)gestureRecognizer
+{
+    // find the cell that was
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        CGPoint location = [gestureRecognizer locationInView:self.tableView];
+        NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+
+        // if the cell exists and it has text, change its text color
+        if (cell && [cell.textLabel.text length] > 0) {
+            [self setCellTextLabelPriorityColor:cell];
+        }
+    }
+}
+
+#pragma mark Helper methods
+
+- (void)setCellTextLabelPriorityColor:(UITableViewCell *)cell
+{
+    UIColor *color = cell.textLabel.textColor;
+
+    // set high priority
+    if (color == [UIColor blackColor] || color == [UIColor greenColor]) {
+        color = [UIColor redColor];
+    }
+    // set medium priority
+    else if (color == [UIColor redColor]) {
+        color = [UIColor yellowColor];
+    }
+    // set low priority
+    else if (color == [UIColor yellowColor]) {
+        color = [UIColor greenColor];
+    }
+
+    cell.textLabel.textColor = color;
 }
 
 @end

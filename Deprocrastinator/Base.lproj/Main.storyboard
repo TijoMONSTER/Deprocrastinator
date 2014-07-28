@@ -20,6 +20,7 @@
                                 <rect key="frame" x="0.0" y="89" width="320" height="391"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="cellID" id="fNy-cp-CoA">
                                         <rect key="frame" x="0.0" y="22" width="320" height="44"/>
@@ -28,11 +29,13 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
+                                        <gestureRecognizers/>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="vXZ-lx-hvc" id="0jG-o6-wGF"/>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="EcY-Y3-b67"/>
+                                    <outletCollection property="gestureRecognizers" destination="gJG-86-lU5" appends="YES" id="n4q-l1-B7u"/>
                                 </connections>
                             </tableView>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gsH-Y2-dBJ">
@@ -70,6 +73,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="gJG-86-lU5">
+                    <connections>
+                        <action selector="onSwipe:" destination="vXZ-lx-hvc" id="dx5-sa-7yF"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="3" y="462"/>
         </scene>
