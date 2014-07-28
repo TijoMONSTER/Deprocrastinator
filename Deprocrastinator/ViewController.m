@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 
-@interface ViewController () <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate>
+@interface ViewController () <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextField *addItemTextField;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -64,7 +64,7 @@
 {
     NSString *todoActivity = [self.todoList objectAtIndex:sourceIndexPath.row];
 
-    [self.todoList removeObjectAtIndex:sourceIndexPath.row];
+    [self removeObjectFromTodoListAtIndex:sourceIndexPath.row];
     [self.todoList insertObject:todoActivity atIndex:destinationIndexPath.row];
 }
 
@@ -157,6 +157,14 @@
 
     self.deletionByClickingOnDeleteButton = NO;
     self.indexPathToDelete = nil;
+}
+
+#pragma mark UITextFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [self onAddButtonPressed:nil];
+    return YES;
 }
 
 #pragma mark Helper methods
