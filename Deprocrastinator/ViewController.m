@@ -14,7 +14,10 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property BOOL isEditing;
-@property  NSMutableArray *todoList;
+@property NSMutableArray *todoList;
+@property NSMutableArray *todoListColors;
+
+
 @property NSIndexPath *indexPathToDelete;
 @property BOOL deletionByClickingOnDeleteButton;
 
@@ -32,7 +35,14 @@
                      @"Say hi to my parents",
                      @"Run Forest, ruuuuun!",
                      nil];
-
+    
+    self.todoListColors = [[NSMutableArray alloc] initWithObjects:
+                     [UIColor blackColor],
+                     [UIColor blackColor],
+                     [UIColor blackColor],
+                     [UIColor blackColor],
+                     nil];
+    
     self.isEditing = NO;
     // allow cells to be selected during editing mode
     self.tableView.allowsSelectionDuringEditing = YES;
@@ -44,6 +54,9 @@
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellID"];
     cell.textLabel.text = [self.todoList objectAtIndex:indexPath.row];
+    
+    cell.textLabel.textColor = [self.todoListColors objectAtIndex:indexPath.row];
+    
     return cell;
 }
 
@@ -63,9 +76,12 @@
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
 {
     NSString *todoActivity = [self.todoList objectAtIndex:sourceIndexPath.row];
+    UIColor *todoActivityColor = [self.todoListColors objectAtIndex:sourceIndexPath.row];
 
-    [self removeObjectFromTodoListAtIndex:sourceIndexPath.row];
+    [self removeObjectFromTodoListAndTodoColorListAtIndex:sourceIndexPath.row];
+    
     [self.todoList insertObject:todoActivity atIndex:destinationIndexPath.row];
+    [self.todoListColors insertObject:todoActivityColor atIndex:destinationIndexPath.row];
 }
 
 #pragma mark UITableViewDelegate
@@ -83,6 +99,7 @@
     }
     else {
         cell.textLabel.textColor = [UIColor greenColor];
+        [self.todoListColors setObject:cell.textLabel.textColor atIndexedSubscript:indexPath.row];
     }
 
     // deselect the cell
@@ -96,6 +113,7 @@
     // if the textfield is not empty
     if ([self.addItemTextField.text length] > 0) {
         [self.todoList addObject:self.addItemTextField.text];
+        [self.todoListColors addObject:[UIColor blackColor]];
         [self.tableView reloadData];
 
         // reset textfield
@@ -132,6 +150,11 @@
         // if the cell exists and it has text, change its text color
         if (cell && [cell.textLabel.text length] > 0) {
             [self setCellTextLabelPriorityColor:cell];
+            
+            // save the color in the array
+            NSIndexPath *cellIndexPath = [self.tableView indexPathForCell:cell];
+            [self.todoListColors setObject:cell.textLabel.textColor atIndexedSubscript:cellIndexPath.row];
+            
         }
     }
 }
@@ -143,8 +166,8 @@
     // clicked on alert's delete button
     if (buttonIndex == 0) {
         // remove item from the array
-        [self removeObjectFromTodoListAtIndex:self.indexPathToDelete.row];
-
+        [self removeObjectFromTodoListAndTodoColorListAtIndex:self.indexPathToDelete.row];
+        
         // clicked on cell's delete button
         if (self.deletionByClickingOnDeleteButton) {
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.indexPathToDelete] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -201,9 +224,10 @@
     cell.textLabel.textColor = color;
 }
 
-- (void)removeObjectFromTodoListAtIndex:(NSUInteger)index
+- (void)removeObjectFromTodoListAndTodoColorListAtIndex:(NSUInteger)index
 {
     [self.todoList removeObjectAtIndex:index];
+    [self.todoListColors removeObjectAtIndex:index];
 }
 
 @end
