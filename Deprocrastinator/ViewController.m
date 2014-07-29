@@ -15,8 +15,8 @@
 
 @property BOOL isEditing;
 @property NSMutableArray *todoList;
-@property NSMutableArray *todoListColors;
-
+@property NSMutableArray *todoListBackgroundColors;
+@property NSMutableArray *todoListTextColors;
 
 @property NSIndexPath *indexPathToDelete;
 @property BOOL deletionByClickingOnDeleteButton;
@@ -36,12 +36,19 @@
                      @"Run Forest, ruuuuun!",
                      nil];
     
-    self.todoListColors = [[NSMutableArray alloc] initWithObjects:
-                     [UIColor blackColor],
-                     [UIColor blackColor],
-                     [UIColor blackColor],
-                     [UIColor blackColor],
-                     nil];
+    self.todoListBackgroundColors = [[NSMutableArray alloc] initWithObjects:
+                           [UIColor whiteColor],
+                           [UIColor whiteColor],
+                           [UIColor whiteColor],
+                           [UIColor whiteColor],
+                           nil];
+
+    self.todoListTextColors = [[NSMutableArray alloc] initWithObjects:
+                           [UIColor blackColor],
+                           [UIColor blackColor],
+                           [UIColor blackColor],
+                           [UIColor blackColor],
+                           nil];
     
     self.isEditing = NO;
     // allow cells to be selected during editing mode
@@ -54,8 +61,8 @@
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellID"];
     cell.textLabel.text = [self.todoList objectAtIndex:indexPath.row];
-    
-    cell.textLabel.textColor = [self.todoListColors objectAtIndex:indexPath.row];
+    cell.textLabel.textColor = [self.todoListTextColors objectAtIndex:indexPath.row];
+    cell.backgroundColor = [self.todoListBackgroundColors objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -76,12 +83,14 @@
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
 {
     NSString *todoActivity = [self.todoList objectAtIndex:sourceIndexPath.row];
-    UIColor *todoActivityColor = [self.todoListColors objectAtIndex:sourceIndexPath.row];
+    UIColor *todoActivityBackgroundColor = [self.todoListBackgroundColors objectAtIndex:sourceIndexPath.row];
+    UIColor *todoActivityTextColor = [self.todoListTextColors objectAtIndex:sourceIndexPath.row];
 
     [self removeObjectFromTodoListAndTodoColorListAtIndex:sourceIndexPath.row];
     
     [self.todoList insertObject:todoActivity atIndex:destinationIndexPath.row];
-    [self.todoListColors insertObject:todoActivityColor atIndex:destinationIndexPath.row];
+    [self.todoListBackgroundColors insertObject:todoActivityBackgroundColor atIndex:destinationIndexPath.row];
+    [self.todoListTextColors insertObject:todoActivityTextColor atIndex:destinationIndexPath.row];
 }
 
 #pragma mark UITableViewDelegate
@@ -99,7 +108,8 @@
     }
     else {
         cell.textLabel.textColor = [UIColor greenColor];
-        [self.todoListColors setObject:cell.textLabel.textColor atIndexedSubscript:indexPath.row];
+        [self.todoListTextColors setObject:cell.textLabel.textColor atIndexedSubscript:indexPath.row];
+//        [self.todoListBackgroundColors setObject:cell.backgroundColor atIndexedSubscript:indexPath.row];
     }
 
     // deselect the cell
@@ -113,7 +123,8 @@
     // if the textfield is not empty
     if ([self.addItemTextField.text length] > 0) {
         [self.todoList addObject:self.addItemTextField.text];
-        [self.todoListColors addObject:[UIColor blackColor]];
+        [self.todoListBackgroundColors addObject:[UIColor whiteColor]];
+        [self.todoListTextColors addObject:[UIColor blackColor]];
         [self.tableView reloadData];
 
         // reset textfield
@@ -153,7 +164,7 @@
             
             // save the color in the array
             NSIndexPath *cellIndexPath = [self.tableView indexPathForCell:cell];
-            [self.todoListColors setObject:cell.textLabel.textColor atIndexedSubscript:cellIndexPath.row];
+            [self.todoListBackgroundColors setObject:cell.backgroundColor atIndexedSubscript:cellIndexPath.row];
             
         }
     }
@@ -206,28 +217,29 @@
 
 - (void)setCellTextLabelPriorityColor:(UITableViewCell *)cell
 {
-    UIColor *color = cell.textLabel.textColor;
+    UIColor *color = cell.backgroundColor;
 
     // set high priority
-    if (color == [UIColor blackColor] || color == [UIColor greenColor]) {
+    if ([color isEqual:[UIColor whiteColor]] || [color isEqual:[UIColor greenColor]]) {
         color = [UIColor redColor];
     }
     // set medium priority
-    else if (color == [UIColor redColor]) {
+    else if ([color isEqual:[UIColor redColor]]) {
         color = [UIColor yellowColor];
     }
     // set low priority
-    else if (color == [UIColor yellowColor]) {
+    else if ([color isEqual:[UIColor yellowColor]]) {
         color = [UIColor greenColor];
     }
 
-    cell.textLabel.textColor = color;
+    cell.backgroundColor = color;
 }
 
 - (void)removeObjectFromTodoListAndTodoColorListAtIndex:(NSUInteger)index
 {
     [self.todoList removeObjectAtIndex:index];
-    [self.todoListColors removeObjectAtIndex:index];
+    [self.todoListBackgroundColors removeObjectAtIndex:index];
+    [self.todoListTextColors removeObjectAtIndex:index];
 }
 
 @end
